@@ -1,12 +1,17 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-
+const zod = require('zod');
 const app = express();
 
 app.use(express.json());
 
 const jwtPassword = '123456';
 const PORT = 3000;
+
+const signInSchema = zod.object({
+  username: zod.string().email(),
+  password: zod.string().min(3)
+});
 
 const ALL_USERS = [
   {
@@ -36,19 +41,26 @@ function userExists(username, password) {
 }
 
 app.post('/signin', function (req, res) {
-  const username = req.body.username;
-  const password = req.body.password;
+  const input = signInSchema.safeParse(req.body);
+  if (input.success) {
+    const username = req.body.username;
+    const password = req.body.password;
 
-  if (!userExists(username, password)) {
-    return res.status(403).json({
-      msg: 'User doesnt exist in our in memory db'
+    if (!userExists(username, password)) {
+      return res.status(403).json({
+        msg: 'User doesnt exist in our in memory db'
+      });
+    }
+
+    var token = jwt.sign({ username: username }, '123456');
+    return res.json({
+      token
+    });
+  } else {
+    return res.status(400).json({
+      msg: 'Invalid input'
     });
   }
-
-  var token = jwt.sign({ username: username }, '123456');
-  return res.json({
-    token
-  });
 });
 
 app.get('/users', function (req, res) {
