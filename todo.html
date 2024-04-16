@@ -1,0 +1,39 @@
+<html>
+  <script>
+    let counter = 1;
+
+    function markAsDone(id) {
+      const button = document.getElementById(id);
+      button.children[2].innerHTML = 'Done';
+    }
+
+    function createInnerDiv(title, description, id) {
+      const parent = document.createElement('div');
+      parent.setAttribute('id', id);
+      const child1 = document.createElement('div');
+      child1.innerHTML = title;
+      const child2 = document.createElement('div');
+      child2.innerHTML = description;
+      const child3 = document.createElement('button');
+      child3.innerHTML = 'Mark as done';
+      child3.setAttribute('onclick', `markAsDone(${id})`);
+      parent.appendChild(child1);
+      parent.appendChild(child2);
+      parent.appendChild(child3);
+      return parent;
+    }
+
+    function addTodo() {
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      document.getElementById('container').appendChild(createInnerDiv(title, description, counter));
+      counter++;
+    }
+  </script>
+  <div>
+    <input type="text" placeholder="title" id="title" /><br /><br />
+    <input type="text" placeholder="description" id="description" /><br /><br />
+    <button onclick="addTodo()">Add todo</button>
+    <div id="container"></div>
+  </div>
+</html>
